@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:gatheuprksa/pages/Connects/connects_controller.dart';
-import 'package:gatheuprksa/pages/Dashboard/home.dart';
 import 'package:gatheuprksa/theme/app_theme.dart';
 import 'package:gatheuprksa/util/_string.dart';
 import 'package:gatheuprksa/util/constants.dart';
@@ -15,6 +14,8 @@ import 'package:gatheuprksa/widgets/connectTile.dart';
 import 'package:gatheuprksa/widgets/custom_text.dart';
 import 'package:gatheuprksa/widgets/no_appbar.dart';
 
+import '../../widgets/showToast.dart';
+
 class Connect extends StatefulWidget {
   const Connect({super.key});
 
@@ -25,7 +26,7 @@ class Connect extends StatefulWidget {
 class _ConnectState extends State<Connect> {
   double? height;
   double? width;
-  Stream<QuerySnapshot> stream = FirebaseFirestore.instance.collection('visitorExperiences').snapshots();
+  Stream<QuerySnapshot> stream = FirebaseFirestore.instance.collection('visitorEvents').snapshots();
 
   final connectController = Get.put(ConnectController());
   final title = TextEditingController();
@@ -35,19 +36,18 @@ class _ConnectState extends State<Connect> {
   final _formKey = GlobalKey<FormState>();
 
   // دالة لإضافة تجربة جديدة
-  Future addExperience() async {
-    CollectionReference userref = FirebaseFirestore.instance.collection('visitorExperiences');
+  Future addEvent() async {
+    CollectionReference userref = FirebaseFirestore.instance.collection('visitorEvents');
     userref.add({
       "title": title.text,
       'landmark': landmark.text,
       'address': address.text,
       'description': description.text,
     });
-    // بعد إضافة التجربة، نقوم بالانتقال إلى الشاشة الرئيسية
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const Home()),
-    );
+    showShortToast("تمت الإضافة بنجاح");
+    // بعد إضافة الفاعلية، نقوم بالانتقال إلى الشاشة الرئيسية
+    connectController.index = Constant.INT_ONE;
+    connectController.update();
   }
 
   @override
@@ -77,7 +77,7 @@ class _ConnectState extends State<Connect> {
               case Constant.INT_ONE:
                 return __body();
               case Constant.INT_TWO:
-                return _addExperience();
+                return _addEvent();
 
               case Constant.INT_FOUR:
                 return _superLeadsBody();
@@ -101,14 +101,14 @@ class _ConnectState extends State<Connect> {
           // عناصر لتحديد الخيارات المتاحة للمستخدم
           optionBox(
               icon: superLeads,
-              title: Strings.visitorExperiences,
+              title: Strings.visitorEvents,
               onTap: () {
                 connectController.index = Constant.INT_FOUR;
                 connectController.update();
               }),
           optionBox(
               icon: group,
-              title: Strings.addExperience,
+              title: Strings.addEvent,
               onTap: () {
                 connectController.index = Constant.INT_TWO;
                 connectController.update();
@@ -119,7 +119,7 @@ class _ConnectState extends State<Connect> {
   }
 
   // دالة لعرض الجزء المتعلق بإضافة تجربة جديدة
-  _addExperience() {
+  _addEvent() {
     return Scaffold(
       backgroundColor: AppTheme.connectBodyColor,
       appBar: NoAppBar(),
@@ -136,7 +136,7 @@ class _ConnectState extends State<Connect> {
                 child: CustomAppBar(
                     leftPadding: 15,
                     bottomPadding: 10,
-                    title: Strings.addExperience,
+                    title: Strings.addEvent,
                     space: Constant.SIZE15,
                     onTap: () {
                       connectController.index = Constant.INT_ONE;
@@ -155,10 +155,10 @@ class _ConnectState extends State<Connect> {
                         const SizedBox(
                           height: 22,
                         ),
-                        // واجهات إدخال لإدخال بيانات التجربة
+                        // واجهات إدخال لإدخال بيانات الفاعلية
                         CustomTextFeild(
                           controller: title,
-                          hintText: "Title :",
+                          hintText: "إسم الفاعلية :",
                           hintSize: 16,
                           contentRightPadding: 10,
                           onTap: () {},
@@ -166,7 +166,7 @@ class _ConnectState extends State<Connect> {
                         ),
                         CustomTextFeild(
                           controller: landmark,
-                          hintText: "Landmark :",
+                          hintText: "المنطقة :",
                           hintSize: 16,
                           contentRightPadding: 10,
                           onTap: () {},
@@ -174,7 +174,7 @@ class _ConnectState extends State<Connect> {
                         ),
                         CustomTextFeild(
                           controller: address,
-                          hintText: "Address :",
+                          hintText: "العنوان :",
                           hintSize: 16,
                           contentRightPadding: 10,
                           onTap: () {},
@@ -182,22 +182,21 @@ class _ConnectState extends State<Connect> {
                         ),
                         CustomTextFeild(
                           controller: description,
-                          hintText: "Description :",
+                          hintText: "وصف الفاعلية :",
                           hintSize: 16,
                           contentRightPadding: 10,
                           onTap: () {},
                           onChanged: (newValue) => newValue,
                         ),
-                        // زر لإضافة التجربة
                         CustomButton(
                           backgroundColor: AppTheme.customButtonBgColor,
                           borderColor: AppTheme.customButtonBgColor,
                           buttonTitle: Strings.add,
                           height: Constant.customButtonHeight,
                           onTap: () {
-                            // التحقق من صحة البيانات قبل إضافة التجربة
+                            // التحقق من صحة البيانات قبل إضافة الفعاليه
                             if (_formKey.currentState!.validate()) {
-                              addExperience();
+                              addEvent();
                             }
                           },
                           textColor: AppTheme.colorWhite,
@@ -230,7 +229,7 @@ class _ConnectState extends State<Connect> {
             children: [
               // شريط عنوان لعرض عنوان الصفحة
               CustomAppBar(
-                  title: Strings.visitorExperiences,
+                  title: Strings.visitorEvents,
                   space: Constant.SIZE15,
                   leftPadding: 15,
                   bottomPadding: 10,
@@ -269,7 +268,7 @@ class _ConnectState extends State<Connect> {
                             String address = data['address'];
                             String description = data['description'];
 
-                            // عرض بيانات التجربة باستخدام ConnectTile
+                            // عرض بيانات الفاعلية باستخدام ConnectTile
                             return ConnectTile(
                               isGroupTile: false,
                               title: title,
@@ -320,6 +319,9 @@ class _ConnectState extends State<Connect> {
                   height: Constant.connectOptionBoxIconSize,
                   width: Constant.connectOptionBoxIconSize,
                 ),
+              ),
+              const SizedBox(
+                width: 15,
               ),
               CustomText(
                 title: title,

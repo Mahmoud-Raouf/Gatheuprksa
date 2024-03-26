@@ -1,8 +1,9 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:gatheuprksa/pages/Connects/connects.dart';
 import 'package:gatheuprksa/pages/Dashboard/home_controller.dart';
 import 'package:gatheuprksa/pages/Profile/profile.dart';
@@ -13,10 +14,9 @@ import 'package:gatheuprksa/util/places.dart';
 import 'package:gatheuprksa/util/resources.dart';
 import 'package:gatheuprksa/widgets/_appbar.dart';
 import 'package:gatheuprksa/widgets/custom_text.dart';
-import 'dart:ui';
-
 import 'package:gatheuprksa/widgets/glashMorphisam.dart';
 import 'package:gatheuprksa/widgets/no_appbar.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
@@ -63,7 +63,6 @@ class _HomeState extends State<Home> {
         _subImage4 = data['subImage4'] ?? '';
       });
     } else {
-      print("Hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
       setState(() {
         _title = '';
         _description1 = '';
@@ -314,7 +313,7 @@ class _HomeState extends State<Home> {
                 children: [
                   // شريط العنوان الخاص بالتطبيق
                   CustomAppBar(
-                    title: "كل الفاعليات",
+                    title: "كل الفعاليات",
                     space: Constant.SIZE15,
                     leftPadding: 15,
                     bottomPadding: 10,
@@ -532,7 +531,7 @@ class _HomeState extends State<Home> {
             children: <Widget>[
               const SizedBox(height: 30.0),
               CustomAppBar(
-                title: "تفاصيل الفاعلية",
+                title: "تفاصيل الفعاليه",
                 space: Constant.SIZE15,
                 leftPadding: 15,
                 bottomPadding: 10,
@@ -662,7 +661,7 @@ class _HomeState extends State<Home> {
                     Container(
                       alignment: Alignment.centerRight,
                       child: Text(
-                        "بداية الفاعلية : $startingDate",
+                        "بداية الفعاليه : $startingDate",
                         style: const TextStyle(
                           fontWeight: FontWeight.normal,
                           fontSize: 15.0,
@@ -674,7 +673,7 @@ class _HomeState extends State<Home> {
                     Container(
                       alignment: Alignment.centerRight,
                       child: Text(
-                        "نهاية الفاعلية : $endingDate",
+                        "نهاية الفعاليه : $endingDate",
                         style: const TextStyle(
                           fontWeight: FontWeight.normal,
                           fontSize: 15.0,
@@ -696,17 +695,16 @@ class _HomeState extends State<Home> {
                     ),
                     const SizedBox(height: 10),
                     Container(
-                      alignment: Alignment.centerRight,
-                      child: const Text(
-                        "الوصف",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                        maxLines: 1,
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
+                        alignment: Alignment.centerRight,
+                        child: const Text(
+                          "الوصف",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                          maxLines: 1,
+                          textAlign: TextAlign.right,
+                        )),
                     Container(
                       alignment: Alignment.centerRight,
                       child: Text(
@@ -778,7 +776,7 @@ class _HomeState extends State<Home> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               navBarItem(title: Strings.home, index: Constant.INT_ONE, icon: home, tappedIcon: tapHome),
-              navBarItem(title: Strings.profile, index: Constant.INT_TWO, icon: person, tappedIcon: tapPerson),
+              navBarItem(title: Strings.profile, index: Constant.INT_TWO, icon: tapPerson, tappedIcon: tapPerson),
               navBarItem(title: Strings.experiments, index: Constant.INT_THREE, icon: chat, tappedIcon: tapChat),
             ],
           ),

@@ -25,12 +25,12 @@ const String image4 = 'assets/Images/image4.jpg';
 const String image5 = 'assets/Images/image5.jpg';
 const String image6 = 'assets/Images/image6.jpg';
 
-const String home = 'assets/Images/Home.svg';
+const String home = 'assets/Images/TapHome.svg';
 const String tapHome = 'assets/Images/TapHome.svg';
 const String favorite = 'assets/Images/Favorite.svg';
 const String tapFavorite = 'assets/Images/TapFavorite.svg';
 const String person = 'assets/Images/User.svg';
-const String tapPerson = 'assets/Images/TapUser.svg';
+const String tapPerson = 'assets/Images/User.svg';
 const String chat = 'assets/Images/Chat.svg';
 const String tapChat = 'assets/Images/TapChat.svg';
 const String filter = 'assets/Images/Filter.svg';
@@ -46,13 +46,6 @@ const String detailImage3 = 'assets/Images/detailImage3.png';
 const String planImage1 = 'assets/Images/planImage1.png';
 const String planImage2 = 'assets/Images/planImage2.png';
 const String planImage3 = 'assets/Images/planImage3.png';
-
-const String planLikedImage1 = 'assets/Images/planLikedImage1.png';
-const String planLikedImage2 = 'assets/Images/planLikedImage2.png';
-const String planLikedImage3 = 'assets/Images/planLikedImage3.png';
-const String planLikedImage4 = 'assets/Images/planLikedImage4.png';
-const String planLikedImage5 = 'assets/Images/planLikedImage5.png';
-const String planLikedImage6 = 'assets/Images/planLikedImage6.png';
 
 const String superLeads = 'assets/Images/superLeads.svg';
 const String group = 'assets/Images/GroupIcon.svg';

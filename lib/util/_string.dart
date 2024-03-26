@@ -61,7 +61,7 @@ class Strings {
   static const String successFull = 'ناجح!';
   static const String resetEmailsentSuccesfully = 'تم إرسال بريد إلكتروني لإعادة تعيين كلمة المرور بنجاح';
   static const String okay = 'حسنا';
-  static const String whereDo = 'فاعلياتك';
+  static const String whereDo = 'فعاليتك';
   static const String youWantToGo = 'فى مكان واحد';
   static const String discoverACulture = 'اكتشف ثقافة';
   static const String spots = 'نقاط';
@@ -116,15 +116,15 @@ class Strings {
   static const String viewMyProfile = 'عرض ملفي الشخصي';
 
   static const String add = 'إضافة';
-  static const String experiments = 'تجارب';
-  static const String visitorExperiences = 'تجارب الزائرين';
+  static const String experiments = 'الفعاليات';
+  static const String visitorEvents = 'كل الفعاليات';
   static const String visitors = 'جميع الزوار';
   static const String hiDhaval = 'مرحبًا! Dhaval';
   static const String joinedMar_2021 = 'انضم - مارس 2021';
   static const String edit = 'تحرير';
   static const String save = 'حفظ';
   static const String superLeads = 'سوبر ليدز';
-  static const String addExperience = 'إضافة تجربة';
+  static const String addEvent = 'إضافة فعالية';
   static const String join = 'انضم';
   static const String connect_ = 'تواصل';
   static const String payment_ = 'دفع';

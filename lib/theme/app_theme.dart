@@ -7,7 +7,7 @@ class AppTheme {
   static const Color primaryColor = Colors.white;
   static const Color colorWhite54 = Colors.white54;
 
-  static Color themeColor = HexColor('#b453ff');
+  static Color themeColor = HexColor('#816f95');
   static const Color colorWhite30 = Colors.white30;
   static const Color colorWhite38 = Colors.white38;
   static const Color colorWhite60 = Colors.white60;
@@ -24,7 +24,7 @@ class AppTheme {
   static const Color colorblack45 = Colors.black45;
   static const Color colorblack38 = Colors.black38;
   static Color tutorialAppbarColor = HexColor(
-    '#b453ff',
+    '#816f95',
   );
 
   static Color buttonThemeColor = HexColor('#b453ff');
@@ -75,9 +75,11 @@ class AppTheme {
 
 // Home page
   static Color tripCardLocationColor = HexColor('#8E89A9');
-  static const Color tripCardBoxshadowColor1 = Color.fromRGBO(204, 200, 225, 0.41);
+  static const Color tripCardBoxshadowColor1 =
+      Color.fromRGBO(204, 200, 225, 0.41);
   static const Color tripCardBoxshadowColor2 = Color.fromRGBO(0, 10, 255, 0.12);
-  static const Color tripCardBoxshadowColor4 = Color.fromRGBO(255, 255, 255, 0.18);
+  static const Color tripCardBoxshadowColor4 =
+      Color.fromRGBO(255, 255, 255, 0.18);
 
   // detail page
   static Color detailMapBoxColor = HexColor('#E4E2EC');
@@ -89,7 +91,7 @@ class AppTheme {
 
   static List<Color> homeBgColor = [
     HexColor('#f5e8ff'),
-    HexColor('#c37afc'),
+    HexColor('#816f95'),
   ];
 
   static List<Color> homeBgColor2 = [AppTheme.colorWhite, AppTheme.colorWhite];
