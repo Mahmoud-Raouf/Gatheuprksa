@@ -61,7 +61,7 @@ class Strings {
   static const String successFull = 'ناجح!';
   static const String resetEmailsentSuccesfully = 'تم إرسال بريد إلكتروني لإعادة تعيين كلمة المرور بنجاح';
   static const String okay = 'حسنا';
-  static const String whereDo = 'فعاليتك';
+  static const String whereDo = 'فعالياتك';
   static const String youWantToGo = 'فى مكان واحد';
   static const String discoverACulture = 'اكتشف ثقافة';
   static const String spots = 'نقاط';

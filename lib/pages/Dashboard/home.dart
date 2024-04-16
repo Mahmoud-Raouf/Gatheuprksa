@@ -12,12 +12,15 @@ import 'package:gatheuprksa/util/_string.dart';
 import 'package:gatheuprksa/util/constants.dart';
 import 'package:gatheuprksa/util/places.dart';
 import 'package:gatheuprksa/util/resources.dart';
+import 'package:gatheuprksa/webservices/firebase_data.dart';
+import 'package:gatheuprksa/widgets/Custombutton.dart';
 import 'package:gatheuprksa/widgets/_appbar.dart';
 import 'package:gatheuprksa/widgets/custom_text.dart';
 import 'package:gatheuprksa/widgets/glashMorphisam.dart';
 import 'package:gatheuprksa/widgets/no_appbar.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:sizer/sizer.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -30,6 +33,9 @@ class _HomeState extends State<Home> {
   double height = Constant.zero;
   double width = Constant.zero;
   Stream<QuerySnapshot> stream = FirebaseFirestore.instance.collection('cities').snapshots();
+  String? commentContent;
+  String userId = "";
+  String userName = "";
 
   final homeController = Get.put(HomeController());
   String documentId = "";
@@ -73,6 +79,21 @@ class _HomeState extends State<Home> {
         _subImage4 = '';
       });
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUserUid().then((uid) {
+      setState(() {
+        userId = uid;
+      });
+    });
+    getCurrentUseData().then((name) {
+      setState(() {
+        userName = name;
+      });
+    });
   }
 
   @override
@@ -717,6 +738,139 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                     const SizedBox(height: 10.0),
+                    Column(
+                      children: [
+                        StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance
+                              .collection('cities')
+                              .doc(documentId)
+                              .collection('events')
+                              .doc(documentDetailId)
+                              .collection('Comments')
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            if (snapshot.hasError) {
+                              return Center(
+                                child: Text('Error: ${snapshot.error}'),
+                              );
+                            }
+                            return SizedBox(
+                              height: 40.h, // ارتفاع ثابت
+                              child: ListView.builder(
+                                itemCount: snapshot.data!.docs.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  DocumentSnapshot document = snapshot.data!.docs[index];
+                                  Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+                                  final text = data['text'];
+                                  final time = DateFormat('yyyy-MM-dd – kk:mm').format(data['time'].toDate());
+                                  final name = data['userName'];
+                                  print("text :::::::::::: $text");
+                                  print("time :::::::::::: $time");
+                                  print("name :::::::::::: $name");
+                                  return Card(
+                                    color: const Color.fromARGB(255, 238, 238, 238),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            height: 2.w,
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "الإسم : $name",
+                                                style: TextStyle(
+                                                  fontSize: 12.sp,
+                                                  color: const Color.fromARGB(255, 0, 0, 0),
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 2.w,
+                                              ),
+                                              Text(
+                                                "بتاريخ $time",
+                                                style: TextStyle(
+                                                  fontSize: 12.sp,
+                                                  color: const Color.fromARGB(255, 0, 0, 0),
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            width: 260.sp,
+                                            child: Text(
+                                              text,
+                                              maxLines: 3,
+                                              textAlign: TextAlign.right,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            children: <Widget>[
+                              TextFormField(
+                                decoration: const InputDecoration(
+                                  hintText: 'اكتب تعليقك...',
+                                  border: OutlineInputBorder(),
+                                ),
+                                maxLines: null,
+                                onChanged: (value) {
+                                  // تحديث محتوى الرسالة بما يتم كتابته
+                                  commentContent = value;
+                                },
+                              ),
+                              const SizedBox(width: 10.0),
+                              CustomButton(
+                                backgroundColor: AppTheme.themeColor,
+                                borderColor: AppTheme.themeColor,
+                                buttonTitle: "إرسال التعليق",
+                                height: Constant.customButtonHeight,
+                                textColor: AppTheme.colorWhite,
+                                onTap: () {
+                                  Future companyAppointmentschat() async {
+                                    CollectionReference mainCollectionRef = FirebaseFirestore.instance
+                                        .collection('cities')
+                                        .doc(documentId)
+                                        .collection('events')
+                                        .doc(documentDetailId)
+                                        .collection('Comments');
+                                    DateTime now = DateTime.now();
+                                    Timestamp currentTimestamp = Timestamp.fromDate(now);
+
+                                    mainCollectionRef.add({
+                                      'text': commentContent,
+                                      'userName': userName,
+                                      'time': currentTimestamp,
+                                      'userUID': userId,
+                                    });
+                                  }
+
+                                  companyAppointmentschat();
+                                  setState(() {});
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
                   ],
                 ),
               ),

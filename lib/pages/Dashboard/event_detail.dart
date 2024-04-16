@@ -23,7 +23,9 @@ class EventDetail extends StatefulWidget {
 class _EventDetailState extends State<EventDetail> {
   double height = Constant.zero;
   double width = Constant.zero;
+  final TextEditingController _commentController = TextEditingController();
 
+  List<String> comments = []; // قائمة التعليقات
   @override
   Widget build(BuildContext context) {
     // استخدام MediaQuery للحصول على أبعاد الشاشة
@@ -77,44 +79,59 @@ class _EventDetailState extends State<EventDetail> {
                                   // إرجاع المستخدم إلى الصفحة الرئيسية
                                   Get.toNamed(AppRoute.HOME);
                                 },
-                                child: Container(
-                                    padding: const EdgeInsets.all(Constant.backIconPadding),
-                                    height: Constant.topIconContainerRadius,
-                                    width: Constant.topIconContainerRadius,
-                                    decoration: Constant.deatailBoxDecoration,
-                                    child: Center(
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: Constant.backIconLeftBottomTopPadding,
-                                            right: Constant.backIconRightPadding,
-                                            bottom: Constant.backIconLeftBottomTopPadding,
-                                            top: Constant.backIconLeftBottomTopPadding),
-                                        child: SvgPicture.asset(
-                                          vector,
-                                          color: AppTheme.colorWhite,
-                                        ),
+                                child: // إنشاء حاوية تحتوي على زر الرجوع
+                                    Container(
+                                  // تحديد الحشو للحاوية
+                                  padding: const EdgeInsets.all(Constant.backIconPadding),
+                                  // تحديد ارتفاع الحاوية
+                                  height: Constant.topIconContainerRadius,
+                                  // تحديد عرض الحاوية
+                                  width: Constant.topIconContainerRadius,
+                                  // تزيين الحاوية باستخدام الخصائص المعينة مسبقًا
+                                  decoration: Constant.deatailBoxDecoration,
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          // تحديد الحشو للرمز داخل الحاوية
+                                          left: Constant.backIconLeftBottomTopPadding,
+                                          right: Constant.backIconRightPadding,
+                                          bottom: Constant.backIconLeftBottomTopPadding,
+                                          top: Constant.backIconLeftBottomTopPadding),
+                                      // إضافة الرمز مع تحديد اللون
+                                      child: SvgPicture.asset(
+                                        vector,
+                                        color: AppTheme.colorWhite,
                                       ),
-                                    )),
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
                           // رمز الحفظ
+                          // بناء صف من الأيقونات المُراد عرضها في الجزء العلوي من الصفحة
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              // عمود يحتوي على صورة (أيقونة الحب)
                               Column(
                                 children: [
+                                  // حاوية لعرض الصورة
                                   Container(
-                                      height: Constant.topIconContainerRadius,
-                                      width: Constant.topIconContainerRadius,
-                                      decoration: Constant.deatailBoxDecoration,
-                                      padding: const EdgeInsets.all(Constant.loveIconPadding),
-                                      child: Center(
-                                        child: SvgPicture.asset(
-                                          love,
-                                        ),
-                                      )),
+                                    height: Constant.topIconContainerRadius,
+                                    width: Constant.topIconContainerRadius,
+                                    // تزيين الحاوية بالشكل المحدد
+                                    decoration: Constant.deatailBoxDecoration,
+                                    // الهامش الداخلي للحاوية
+                                    padding: const EdgeInsets.all(Constant.loveIconPadding),
+                                    child: Center(
+                                      // عرض الصورة (أيقونة الحب) باستخدام SvgPicture
+                                      child: SvgPicture.asset(
+                                        love,
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               )
                             ],
@@ -245,6 +262,51 @@ class _EventDetailState extends State<EventDetail> {
                         ),
                       ),
                     ),
+                  ),
+                  Column(
+                    children: <Widget>[
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: comments.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return ListTile(
+                              title: Text(comments[index]),
+                              // يمكنك إضافة مزيد من التخصيصات لكل عنصر في القائمة هنا
+                            );
+                          },
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: TextFormField(
+                                controller: _commentController,
+                                decoration: const InputDecoration(
+                                  hintText: 'اكتب تعليقك...',
+                                  border: OutlineInputBorder(),
+                                ),
+                                maxLines: null,
+                              ),
+                            ),
+                            const SizedBox(width: 10.0),
+                            ElevatedButton(
+                              onPressed: _commentController.text.isEmpty
+                                  ? null
+                                  : () {
+                                      // إضافة التعليق إلى قائمة التعليقات
+                                      setState(() {
+                                        comments.add(_commentController.text);
+                                        _commentController.clear();
+                                      });
+                                    },
+                              child: const Text('إرسال'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   )
                 ],
               ),
@@ -296,21 +358,28 @@ class _EventDetailState extends State<EventDetail> {
   // عرض صورة مع تأثير زجاجي
   image4({required String image}) {
     return Container(
+      // إنشاء حاوية بارتفاع وعرض ثابتة
       height: Constant.blureMapBoxSize,
       width: Constant.blureMapBoxSize,
+      // تزيين الحاوية باللون والشكل المعين
       decoration: BoxDecoration(
           color: AppTheme.colorTransprant,
           borderRadius: BorderRadius.circular(Constant.blureMapBoxRadius),
           image: DecorationImage(image: AssetImage(image))),
       child: GlassmorPhism(
+        // إضافة تأثير الزجاج المعتم
         blure: Constant.blureMapBoxBlureness,
         opacity: Constant.blureMapBoxOpacity,
         radius: Constant.blureMapBoxRadius,
         child: Center(
           child: CustomText(
+            // عرض نص مخصص
             title: '+ 5 ',
+            // تحديد حجم النص
             fontSize: Constant.doublemoreImageTextSize,
+            // تحديد نوع الخط وزنه
             fontWight: FontWeight.bold,
+            // تحديد لون النص
             color: AppTheme.colorWhite,
           ),
         ),
@@ -321,12 +390,20 @@ class _EventDetailState extends State<EventDetail> {
   // عرض صورة بدون تأثير زجاجي
   images({required String image}) {
     return Container(
+      // تعيين ارتفاع الحاوية للخريطة المُعتمة
       height: Constant.blureMapBoxSize,
+      // تعيين عرض الحاوية للخريطة المُعتمة
       width: Constant.blureMapBoxSize,
       decoration: BoxDecoration(
-          color: AppTheme.colorTransprant,
-          borderRadius: BorderRadius.circular(Constant.blureMapBoxRadius),
-          image: DecorationImage(image: AssetImage(image))),
+        // تعيين لون الحاوية ليكون شفافًا
+        color: AppTheme.colorTransprant,
+        // تعيين زوايا مدورة للحاوية
+        borderRadius: BorderRadius.circular(Constant.blureMapBoxRadius),
+        // إضافة صورة خلفية للحاوية
+        image: DecorationImage(
+          image: AssetImage(image), // استخدام الصورة المُحددة
+        ),
+      ),
     );
   }
 }

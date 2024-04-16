@@ -45,7 +45,7 @@ class _ConnectState extends State<Connect> {
       'description': description.text,
     });
     showShortToast("تمت الإضافة بنجاح");
-    // بعد إضافة الفاعلية، نقوم بالانتقال إلى الشاشة الرئيسية
+    // بعد إضافة الفعالية، نقوم بالانتقال إلى الشاشة الرئيسية
     connectController.index = Constant.INT_ONE;
     connectController.update();
   }
@@ -155,10 +155,10 @@ class _ConnectState extends State<Connect> {
                         const SizedBox(
                           height: 22,
                         ),
-                        // واجهات إدخال لإدخال بيانات الفاعلية
+                        // واجهات إدخال لإدخال بيانات الفعالية
                         CustomTextFeild(
                           controller: title,
-                          hintText: "إسم الفاعلية :",
+                          hintText: "إسم الفعالية :",
                           hintSize: 16,
                           contentRightPadding: 10,
                           onTap: () {},
@@ -182,7 +182,7 @@ class _ConnectState extends State<Connect> {
                         ),
                         CustomTextFeild(
                           controller: description,
-                          hintText: "وصف الفاعلية :",
+                          hintText: "وصف الفعالية :",
                           hintSize: 16,
                           contentRightPadding: 10,
                           onTap: () {},
@@ -268,7 +268,7 @@ class _ConnectState extends State<Connect> {
                             String address = data['address'];
                             String description = data['description'];
 
-                            // عرض بيانات الفاعلية باستخدام ConnectTile
+                            // عرض بيانات الفعالية باستخدام ConnectTile
                             return ConnectTile(
                               isGroupTile: false,
                               title: title,
