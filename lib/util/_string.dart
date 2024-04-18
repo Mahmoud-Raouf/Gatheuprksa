@@ -75,6 +75,7 @@ class Strings {
 
   static const String home = 'الصفحة الرئيسية';
   static const String profile = 'الملف الشخصي';
+  static const String favorite = 'المفضلة';
   static const String connect = 'تواصل';
   static const String whatDo = 'ماذا';
   static const String youWantToSee = 'تريد أن ترى؟';

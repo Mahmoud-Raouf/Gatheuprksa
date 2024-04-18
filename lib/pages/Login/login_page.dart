@@ -11,6 +11,7 @@ import 'package:gatheuprksa/widgets/Custom_Textfield.dart';
 import 'package:gatheuprksa/widgets/Custombutton.dart';
 import 'package:gatheuprksa/widgets/app_logo.dart';
 import 'package:gatheuprksa/widgets/custom_text.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -35,6 +36,14 @@ class _LoginState extends State<Login> {
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
+
+      // بعد نجاح تسجيل الدخول، استرجع معرف المستخدم من FirebaseAuth
+      String userId = FirebaseAuth.instance.currentUser!.uid;
+
+      // ثم قم بحفظه في SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString("userId", userId);
+
       // في حال نجاح تسجيل الدخول، قم بتوجيه المستخدم إلى الصفحة الرئيسية
       Navigator.push(
         context,

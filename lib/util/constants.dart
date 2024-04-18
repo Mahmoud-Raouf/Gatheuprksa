@@ -41,6 +41,8 @@ class Constant {
   static const int INT_THREE = 3;
   static const int INT_FIVE = 5;
   static const int INT_SIX = 6;
+  static const int INT_FAV = 7;
+  static const int INT_FAVEventDetail = 8;
 
   static const int INT_FOUR = 4;
 
