@@ -254,7 +254,7 @@ class _EventFavDetailState extends State<EventFavDetail> {
                         "التفاصيل",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          fontSize: 15,
                         ),
                         maxLines: 1,
                         textAlign: TextAlign.right,
@@ -326,7 +326,7 @@ class _EventFavDetailState extends State<EventFavDetail> {
                         description,
                         style: const TextStyle(
                           fontWeight: FontWeight.normal,
-                          fontSize: 15.0,
+                          fontSize: 14.0,
                         ),
                         textAlign: TextAlign.right,
                       ),

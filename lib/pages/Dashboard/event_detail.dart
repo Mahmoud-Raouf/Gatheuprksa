@@ -277,7 +277,7 @@ class _EventDetailState extends State<EventDetail> {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.all(10.0),
+                        padding: const EdgeInsets.all(9.0),
                         child: Row(
                           children: <Widget>[
                             Expanded(

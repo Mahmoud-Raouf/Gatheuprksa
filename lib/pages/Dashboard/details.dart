@@ -125,7 +125,7 @@ class Details extends StatelessWidget {
   // عنصر لعرض الصور بشكل أفقي
   buildSlider() {
     return Container(
-      padding: const EdgeInsets.only(left: 20),
+      padding: const EdgeInsets.only(left: 19),
       height: 250.0,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,

@@ -676,7 +676,7 @@ class _HomeState extends State<Home> {
 
                                                 Padding(
                                                   padding: EdgeInsets.only(
-                                                    right: width * 0.35,
+                                                    right: width * 0.34,
                                                   ),
                                                   child: InkWell(
                                                     onTap: () async {
