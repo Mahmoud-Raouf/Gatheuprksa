@@ -23,6 +23,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -50,6 +51,20 @@ class _HomeState extends State<Home> {
   String _subImage2 = "";
   String _subImage3 = "";
   String _subImage4 = "";
+
+  String? imageUrl; // حقل مؤقت لعنوان الصورة
+  Future<String> downloadImage(String imagePath) async {
+    try {
+      // تحميل الصورة من Firebase Storage
+      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.ref(imagePath);
+      final imageUrl = await ref.getDownloadURL();
+      print("imageUrl ::::::::::::: $imageUrl");
+      return imageUrl;
+    } catch (e) {
+      print('Error downloading image: $e');
+      return ''; // يمكنك تعديل هذا الجزء ليتناسب مع متطلبات التعامل مع الأخطاء
+    }
+  }
 
   Future<void> fetchDocument() async {
     final querySnapshot = await FirebaseFirestore.instance
@@ -399,12 +414,14 @@ class _HomeState extends State<Home> {
                               DocumentSnapshot document = snapshot.data!.docs[index];
                               Map<String, dynamic> data = document.data() as Map<String, dynamic>;
                               String title = data['title'];
-                              String picture = data['picture'];
+                              String picture = data['imageUrl'];
                               String notes = data['notes'];
-                              String likesNumber = data['likesNumber'];
                               String documentDetailuid = document.id;
 
-                              // بناء كل عنصر من عناصر قائمة الأماكن السياحية
+                              // تحميل الصورة من Firebase Storage
+                              firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.ref(picture);
+                              print("ref ::::::::::::::::::::::::::::::: $ref");
+
                               return Stack(
                                 children: [
                                   // تأثير زجاجي خلفي للعنصر
@@ -424,6 +441,7 @@ class _HomeState extends State<Home> {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           // عرض صورة الأماكن السياحية
+                                          // عرض صورة الأماكن السياحية
                                           Padding(
                                             padding: const EdgeInsets.only(
                                               right: Constant.bookingTileImageRightPadding,
@@ -436,12 +454,20 @@ class _HomeState extends State<Home> {
                                                 borderRadius:
                                                     BorderRadius.circular(Constant.searchTileImageCircularRadius),
                                                 image: DecorationImage(
-                                                  image: NetworkImage(picture),
+                                                  // استخدام قيمة الصورة المؤقتة
+                                                  // استخدام قيمة الصورة المؤقتة
+                                                  image: picture != null
+                                                      ? NetworkImage(picture) // استخدام عنوان URL للصورة
+                                                      : const NetworkImage(
+                                                              'https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg')
+                                                          as ImageProvider<Object>,
+
                                                   fit: BoxFit.cover,
                                                 ),
                                               ),
                                             ),
                                           ),
+
                                           // معلومات الأماكن السياحية
                                           Padding(
                                             padding: const EdgeInsets.only(right: 8.0),
@@ -472,19 +498,19 @@ class _HomeState extends State<Home> {
                                                     ),
                                                   ),
                                                 ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(top: Constant.tripCardLocationPadding * 2),
-                                                  child: SizedBox(
-                                                    width: width * 0.45,
-                                                    child: CustomText(
-                                                      title: " $likesNumber لايك",
-                                                      fontSize: width * 0.03,
-                                                      color: AppTheme.tripCardLocationColor,
-                                                      fontWight: FontWeight.w400,
-                                                    ),
-                                                  ),
-                                                ),
+                                                // Padding(
+                                                //   padding:
+                                                //       const EdgeInsets.only(top: Constant.tripCardLocationPadding * 2),
+                                                //   child: SizedBox(
+                                                //     width: width * 0.45,
+                                                //     child: CustomText(
+                                                //       title: " $likesNumber لايك",
+                                                //       fontSize: width * 0.03,
+                                                //       color: AppTheme.tripCardLocationColor,
+                                                //       fontWight: FontWeight.w400,
+                                                //     ),
+                                                //   ),
+                                                // ),
                                                 Padding(
                                                   padding: EdgeInsets.only(
                                                     right: width * 0.35,
