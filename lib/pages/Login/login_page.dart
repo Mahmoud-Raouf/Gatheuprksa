@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gatheuprksa/pages/Signup/registration_type.dart';
 import 'package:get/get.dart';
 import 'package:gatheuprksa/pages/Dashboard/home.dart';
 import 'package:gatheuprksa/pages/Login/login_controller.dart';
-import 'package:gatheuprksa/pages/signup/signup.dart';
 import 'package:gatheuprksa/theme/app_theme.dart';
 import 'package:gatheuprksa/util/_string.dart';
 import 'package:gatheuprksa/util/constants.dart';
@@ -151,7 +151,7 @@ class _LoginState extends State<Login> {
                         highlightColor: AppTheme.colorTransprant,
                         splashColor: AppTheme.colorTransprant,
                         onTap: () {
-                          Get.to(const SignUp());
+                          Get.to(const RegistrationType());
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,

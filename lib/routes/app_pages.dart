@@ -1,4 +1,3 @@
-import 'package:gatheuprksa/pages/Signup/signup.dart';
 import 'package:get/get.dart';
 import 'package:gatheuprksa/pages/Dashboard/event_detail.dart';
 import 'package:gatheuprksa/pages/Dashboard/home.dart';
@@ -24,7 +23,6 @@ import '../pages/ForgotPassword/forgot_password.dart';
 */
 class AppPages {
   static var list = [
-    GetPage(name: AppRoute.SIGNUP, page: () => const SignUp()),
     GetPage(name: AppRoute.LOGIN, page: () => const Login()),
     GetPage(name: AppRoute.OPTION, page: () => const Option()),
     GetPage(name: AppRoute.FORGOT_PASSWORD, page: () => const ForgotPassword()),

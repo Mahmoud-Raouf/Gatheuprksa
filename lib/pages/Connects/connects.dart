@@ -46,7 +46,7 @@ class _ConnectState extends State<Connect> {
   DateTime? _startingDate;
   DateTime? _endDate;
 
-  File? imageFile;
+  String? imageFile;
 
   List<Map<String, dynamic>> cities = [
     {'id': 'dMdaehwSyMbu2nxgs1KO', 'name': 'مدينة الرياض'},
@@ -87,7 +87,7 @@ class _ConnectState extends State<Connect> {
       'endingDate': _endDate,
       'description': description.text,
       'notes': notesText,
-      'imageUrl': imageFile != null ? imageFile?.path : null, // رابط الصورة في Firebase Storage
+      'imageUrl': imageFile, // رابط الصورة في Firebase Storage
       'uid': useruid,
     });
 
@@ -98,25 +98,25 @@ class _ConnectState extends State<Connect> {
   }
 
 // دالة لرفع الصور إلى Firebase Storage
-
-  Future uploadImage() async {
+  Future<void> uploadImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      imageFile = imageFile; // يمكنك إعادة تعيين القيمة إلى null بعد الرفع بنجاح إذا كنت ترغب في ذلك
-    });
-    if (pickedFile != null) {
-      imageFile = File(pickedFile.path);
-      String fileName = imageFile!.path;
-      String titleName = title.text; // تأكد من تعريف productname
+    showShortToast("يتم رفع الصورة الأن برجاء الانتظار");
 
-      FirebaseStorage storage = FirebaseStorage.instance;
-      Reference ref = storage.ref().child("Image-$titleName/$fileName"); // استخدام اسم المنتج في اسم الملف
-      UploadTask uploadTask = ref.putFile(imageFile!);
+    if (pickedFile != null) {
+      FirebaseStorage storage = FirebaseStorage.instanceFor(bucket: 'gs://gatherup-74d27.appspot.com');
+      Reference ref = storage.ref().child('${DateTime.now()}.png');
+      UploadTask uploadTask = ref.putFile(File(pickedFile.path));
+
       await uploadTask.whenComplete(() async {
         String downloadURL = await ref.getDownloadURL();
 
-        // استخدم downloadURL كقيمة لمفتاح imageUrl عند إضافة البيانات إلى Firestore
+        setState(() {
+          imageFile = downloadURL; // Resetting imageFile to null after successful upload if desired
+        });
+        print('downloadURL ::::::::::::: $downloadURL');
+
+        // Use downloadURL as the value for the imageUrl key when adding data to Firestore
       });
     } else {
       print('No image selected');
@@ -400,22 +400,24 @@ class _ConnectState extends State<Connect> {
                               textColor: AppTheme.colorWhite,
                             ),
                           ),
-                          SizedBox(
-                            width: width * 0.5,
-                            child: CustomButton(
-                              backgroundColor: AppTheme.customButtonBgColor,
-                              borderColor: AppTheme.customButtonBgColor,
-                              buttonTitle: Strings.add,
-                              height: Constant.customButtonHeight,
-                              onTap: () {
-                                // التحقق من صحة البيانات قبل إضافة الفعاليه
-                                if (_formKey.currentState!.validate()) {
-                                  addEvent();
-                                }
-                              },
-                              textColor: AppTheme.colorWhite,
-                            ),
-                          ),
+                          imageFile != null
+                              ? SizedBox(
+                                  width: width * 0.5,
+                                  child: CustomButton(
+                                    backgroundColor: AppTheme.customButtonBgColor,
+                                    borderColor: AppTheme.customButtonBgColor,
+                                    buttonTitle: Strings.add,
+                                    height: Constant.customButtonHeight,
+                                    onTap: () {
+                                      // التحقق من صحة البيانات قبل إضافة الفعاليه
+                                      if (_formKey.currentState!.validate()) {
+                                        addEvent();
+                                      }
+                                    },
+                                    textColor: AppTheme.colorWhite,
+                                  ),
+                                )
+                              : const SizedBox(),
                         ],
                       ),
                     ],

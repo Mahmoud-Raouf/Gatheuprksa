@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gatheuprksa/pages/Connects/connects.dart';
 import 'package:gatheuprksa/pages/Dashboard/event_Fav_detail.dart';
 import 'package:gatheuprksa/pages/Dashboard/home_controller.dart';
+import 'package:gatheuprksa/pages/Profile/companyProfile.dart';
 import 'package:gatheuprksa/pages/Profile/profile.dart';
 import 'package:gatheuprksa/theme/app_theme.dart';
 import 'package:gatheuprksa/util/_string.dart';
@@ -39,6 +40,7 @@ class _HomeState extends State<Home> {
   String? commentContent;
   String userId = "";
   String userName = "";
+  String userRole = "";
 
   final homeController = Get.put(HomeController());
   String documentId = "";
@@ -56,7 +58,7 @@ class _HomeState extends State<Home> {
   Future<String> downloadImage(String imagePath) async {
     try {
       // تحميل الصورة من Firebase Storage
-      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.ref(imagePath);
+      final ref = firebase_storage.FirebaseStorage.instance.ref("IMG_20230525_125412.jpg");
       final imageUrl = await ref.getDownloadURL();
       print("imageUrl ::::::::::::: $imageUrl");
       return imageUrl;
@@ -130,6 +132,11 @@ class _HomeState extends State<Home> {
         userName = name;
       });
     });
+    getCurrentUserRole().then((role) {
+      setState(() {
+        userRole = role;
+      });
+    });
   }
 
   @override
@@ -155,9 +162,13 @@ class _HomeState extends State<Home> {
               case Constant.INT_ONE:
                 return _home(); // عرض واجهة الصفحة الرئيسية
               case Constant.INT_TWO:
-                return Profile(
-                  homeController: homeController,
-                ); // عرض واجهة الصفحة الشخصية
+                return userRole == 'user'
+                    ? Profile(
+                        homeController: homeController,
+                      )
+                    : CompanyProfile(
+                        homeController: homeController,
+                      ); // عرض واجهة الصفحة الشخصية
               case Constant.INT_THREE:
                 return const Connect(); // عرض واجهة الصفحة "Connect"
               case Constant.INT_FOUR:
@@ -418,10 +429,6 @@ class _HomeState extends State<Home> {
                               String notes = data['notes'];
                               String documentDetailuid = document.id;
 
-                              // تحميل الصورة من Firebase Storage
-                              firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.ref(picture);
-                              print("ref ::::::::::::::::::::::::::::::: $ref");
-
                               return Stack(
                                 children: [
                                   // تأثير زجاجي خلفي للعنصر
@@ -454,14 +461,7 @@ class _HomeState extends State<Home> {
                                                 borderRadius:
                                                     BorderRadius.circular(Constant.searchTileImageCircularRadius),
                                                 image: DecorationImage(
-                                                  // استخدام قيمة الصورة المؤقتة
-                                                  // استخدام قيمة الصورة المؤقتة
-                                                  image: picture != null
-                                                      ? NetworkImage(picture) // استخدام عنوان URL للصورة
-                                                      : const NetworkImage(
-                                                              'https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg')
-                                                          as ImageProvider<Object>,
-
+                                                  image: NetworkImage(picture),
                                                   fit: BoxFit.cover,
                                                 ),
                                               ),
@@ -479,6 +479,7 @@ class _HomeState extends State<Home> {
                                                   height: 20,
                                                 ),
                                                 // عنوان الأماكن السياحية
+
                                                 CustomText(
                                                   title: title,
                                                   fontSize: Constant.searchTileTitleSize,
@@ -624,7 +625,7 @@ class _HomeState extends State<Home> {
                               DocumentSnapshot document = snapshot.data!.docs[index];
                               Map<String, dynamic> data = document.data() as Map<String, dynamic>;
                               String title = data['title'];
-                              String picture = data['picture'];
+                              String picture = data['imageUrl'];
                               String notes = data['notes'];
                               String favCitiesDocumentId = data['favCitiesDocumentId'];
                               String favDocumentId = data['favDocumentId'];
@@ -706,7 +707,6 @@ class _HomeState extends State<Home> {
                                                   ),
                                                   child: InkWell(
                                                     onTap: () async {
-                                                      print("documentDetailuid : $documentDetailuid");
                                                       Get.to(EventFavDetail(
                                                         documentId: favDocumentId,
                                                         citiesdocumentId: favCitiesDocumentId,
@@ -774,7 +774,7 @@ class _HomeState extends State<Home> {
           String id = snapshot.data?.id ?? ''; // الـ ID الخاص بالمستند
           String title = place?['title'] ?? ''; // العنوان
           String notes = place?['notes'] ?? ''; // العنوان
-          String address = place?['location'] ?? ''; // العنوان
+          String address = place?['address'] ?? ''; // العنوان
           String description = place?['description'] ?? ''; // الوصف الثاني
 
           String ticketPrice = place?['ticketPrice'] ?? ''; //
@@ -798,7 +798,7 @@ class _HomeState extends State<Home> {
 
           String totalTicketsAvailable = place?['totalTicketsAvailable'] ?? ''; // الوصف الثاني
           List<Map<String, String>> images = [
-            {'picture': place?['picture'] ?? ''},
+            {'picture': place?['imageUrl'] ?? ''},
             // {'image': place?['subImage2'] ?? ''},
             // {'image': place?['subImage3'] ?? ''},
             // {'image': place?['subImage4'] ?? ''},
@@ -824,7 +824,7 @@ class _HomeState extends State<Home> {
                     const Spacer(),
                     InkWell(
                       onTap: () {
-                        String imageUrl = place?['picture'] ?? '';
+                        String imageUrl = place?['imageUrl'] ?? '';
 
                         FirebaseFirestore.instance
                             .collection('usersFav')
@@ -835,8 +835,10 @@ class _HomeState extends State<Home> {
                           // يمكنك إضافة المزيد من البيانات إذا كنت بحاجة إليها، مثل اسم الوثيقة أو أي بيانات أخرى.
                           'favCitiesDocumentId': documentId,
                           'favDocumentId': id,
-                          'picture': imageUrl,
+                          'imageUrl': imageUrl,
                           'title': title,
+                          'totalTicketsAvailable': totalTicketsAvailable,
+
                           'address': address,
                           'description': description,
                           'notes': notes,
@@ -880,7 +882,7 @@ class _HomeState extends State<Home> {
                   primary: false,
                   itemCount: images.length,
                   itemBuilder: (BuildContext context, int index) {
-                    String imageUrl = images[index]['picture'] ?? '';
+                    String imageUrl = images[index]['imageUrl'] ?? '';
 
                     return Padding(
                       padding: const EdgeInsets.only(right: 10.0),
@@ -1239,7 +1241,8 @@ class _HomeState extends State<Home> {
             children: [
               navBarItem(title: Strings.home, index: Constant.INT_ONE, icon: home, tappedIcon: tapHome),
               navBarItem(title: Strings.profile, index: Constant.INT_TWO, icon: tapPerson, tappedIcon: tapPerson),
-              navBarItem(title: Strings.experiments, index: Constant.INT_THREE, icon: chat, tappedIcon: tapChat),
+              if (userRole == 'company')
+                navBarItem(title: Strings.experiments, index: Constant.INT_THREE, icon: chat, tappedIcon: tapChat),
               navBarItem(title: Strings.favorite, index: Constant.INT_FAV, icon: favorite, tappedIcon: favorite),
             ],
           ),

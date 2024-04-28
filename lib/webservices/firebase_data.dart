@@ -64,7 +64,7 @@ Future<String> getCurrentUserNumberPhone() async {
   return number;
 }
 
-Future<String> getCurrentUserLocation() async {
+Future<String> getCurrentUserRole() async {
   final User user = _auth.currentUser!;
   final uid = user.uid;
   final CollectionReference documentReference = FirebaseFirestore.instance.collection("customUsers");
@@ -73,9 +73,23 @@ Future<String> getCurrentUserLocation() async {
 
   final DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
 
-  final String location = documentSnapshot['location'];
+  final String role = documentSnapshot['role'];
 
-  return location;
+  return role;
+}
+
+Future<String> getCurrentUserAddress() async {
+  final User user = _auth.currentUser!;
+  final uid = user.uid;
+  final CollectionReference documentReference = FirebaseFirestore.instance.collection("customUsers");
+
+  final QuerySnapshot querySnapshot = await documentReference.where("uid", isEqualTo: uid).get();
+
+  final DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+
+  final String address = documentSnapshot['address'];
+
+  return address;
 }
 
 // جلب معرف المستخدم الحالي

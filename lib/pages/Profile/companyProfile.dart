@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gatheuprksa/util/hexcode.dart';
 import 'package:get/get.dart';
@@ -7,16 +8,17 @@ import 'package:gatheuprksa/util/constants.dart';
 import 'package:gatheuprksa/webservices/firebase_data.dart';
 import 'profile_controller.dart';
 
-class Profile extends StatefulWidget {
+class CompanyProfile extends StatefulWidget {
   HomeController homeController;
-  Profile({super.key, required this.homeController});
+  CompanyProfile({super.key, required this.homeController});
 
   @override
-  State<Profile> createState() => _ProfileState();
+  State<CompanyProfile> createState() => _CompanyProfileState();
 }
 
-class _ProfileState extends State<Profile> {
-  static String? useruid;
+class _CompanyProfileState extends State<CompanyProfile> {
+  static String useruid = "COFFsG8MIUdqb2EMk3X1tXoJePY2";
+  int eventsCount = 0;
 
   double? height;
   double? width;
@@ -25,12 +27,44 @@ class _ProfileState extends State<Profile> {
   String _location = "";
   String _numberContent = "";
   String _emailContent = "";
-  final String _bloodType = "";
+
+// الاستعلام للحصول على عدد ال events التي قام بها المستخدم المسجل دخول
+  Future<int> getEventsCount(String userUid) async {
+    // جمع العدد الإجمالي للفعاليات
+    int totalEventsCount = 0;
+
+    // جلب قائمة الشركات
+    QuerySnapshot<Map<String, dynamic>> companiesSnapshot =
+        await FirebaseFirestore.instance.collection('Companies').get();
+
+    // لكل شركة، جلب عدد الفعاليات وإضافته إلى العدد الإجمالي
+    await Future.forEach(companiesSnapshot.docs, (companyDoc) async {
+      QuerySnapshot<Map<String, dynamic>> eventsSnapshot = await FirebaseFirestore.instance
+          .collection('cities')
+          .doc('7zqgM4jdO8e182TllvRl')
+          .collection('events')
+          .where('uid', isEqualTo: userUid)
+          .get();
+      totalEventsCount += eventsSnapshot.size;
+    });
+
+    print("Total Events Count: $totalEventsCount");
+    return totalEventsCount;
+  }
 
   static Future<void> initialize() async {
     getCurrentUseData();
     getCurrentUserNumberPhone();
     getCurrentEmail();
+  }
+
+  Future<void> _getEventsCount() async {
+    // قم بتنفيذ الدالة التي تسترجع عدد الفعاليات
+    int count = await getEventsCount(useruid);
+    // حدث حالة الحاوية لإعادة بناء الواجهة مع القيمة الجديدة
+    setState(() {
+      eventsCount = count;
+    });
   }
 
   @override
@@ -66,6 +100,7 @@ class _ProfileState extends State<Profile> {
         _location = address;
       });
     });
+    _getEventsCount();
 
     // تحديث الـ state بمعلومات المستخدم
     setState(() {
@@ -145,6 +180,7 @@ class _ProfileState extends State<Profile> {
                                 child: Padding(
                                   padding: EdgeInsets.all(width / 20),
                                   child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+                                    // headerChild('عدد الفعاليات', "$eventsCount"),
                                     headerChild('العنوان', _location),
                                     headerChild('رقم الهاتف', _numberContent),
                                   ]),

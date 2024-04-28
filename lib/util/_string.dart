@@ -33,6 +33,7 @@ class Strings {
   static const String byContinuingYouAgree = 'من خلال الاستمرار فإنك توافق على ';
   static const String repeatPassword = 'كرر كلمة المرور';
   static const String phoneNumber = 'رقم الهاتف';
+  static const String address = 'العنوان';
   static const String numberofvisits = 'عدد زيارات المدينة';
   static const String email = 'البريد الإلكتروني';
   static const String username = 'الاسم الكامل';

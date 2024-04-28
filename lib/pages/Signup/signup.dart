@@ -15,7 +15,9 @@ import '../../widgets/Custom_Textfield.dart';
 import 'signup_controller.dart';
 
 class SignUp extends StatefulWidget {
-  const SignUp({super.key});
+  String? userRole;
+
+  SignUp({Key? key, required this.userRole}) : super(key: key);
 
   @override
   State<SignUp> createState() => _SignUpState();
@@ -38,6 +40,7 @@ class _SignUpState extends State<SignUp> {
   final _emailController = TextEditingController();
   final _nameController = TextEditingController();
   final _numberController = TextEditingController();
+  final _addressController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
@@ -71,6 +74,8 @@ class _SignUpState extends State<SignUp> {
           "uid": result.user?.uid,
           'name': _nameController.text,
           'number': _numberController.text,
+          'role': widget.userRole,
+          'address': _addressController.text,
         });
 
         Navigator.push(
@@ -191,6 +196,14 @@ class _SignUpState extends State<SignUp> {
                       CustomTextFeild(
                         controller: _numberController,
                         hintText: Strings.phoneNumber,
+                        prefixIcon: const Icon(
+                          Icons.numbers,
+                          color: AppTheme.colorblack38,
+                        ),
+                      ),
+                      CustomTextFeild(
+                        controller: _addressController,
+                        hintText: Strings.address,
                         prefixIcon: const Icon(
                           Icons.numbers,
                           color: AppTheme.colorblack38,
