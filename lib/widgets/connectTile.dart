@@ -6,10 +6,10 @@ import 'package:gatheuprksa/widgets/custom_text.dart';
 
 // تعريف عنصر ConnectTile لعرض بيانات الاتصال أو المجموعة
 class ConnectTile extends StatefulWidget {
-  String title; // عنوان العنصر
-  String address; // عنوان العنصر
-  String description; // وصف العنصر
-  String landmark; // المعلم المميز
+  String userName; // عنوان العنصر
+  String ticketPrice; // عنوان العنصر
+  String time; // وصف العنصر
+  String ticketId; // المعلم المميز
   void Function()? onTap; // دالة التفاعل عند النقر على العنصر
   bool isGroupTile; // متغير يحدد إذا كان العنصر يمثل مجموعة أم لا
   bool wantToAddMore; // متغير يحدد إذا كان يريد إضافة المزيد من المعلومات
@@ -18,10 +18,10 @@ class ConnectTile extends StatefulWidget {
       {super.key,
       this.wantToAddMore = false,
       this.isGroupTile = true,
-      required this.title,
-      required this.address,
-      required this.description,
-      required this.landmark,
+      required this.userName,
+      required this.ticketPrice,
+      required this.time,
+      required this.ticketId,
       this.onTap});
 
   @override
@@ -77,7 +77,7 @@ class _ConnectTileState extends State<ConnectTile> {
                     children: [
                       // CustomText لعرض عنوان العنصر
                       CustomText(
-                        title: widget.title,
+                        title: "إسم الفعالية ${widget.userName}",
                         fontSize: Constant.groupTileTitleSize * 1.1,
                         fontfamily: Strings.emptyString,
                         fontWight: FontWeight.w500,
@@ -86,7 +86,7 @@ class _ConnectTileState extends State<ConnectTile> {
                       // CustomText لعرض عنوان العنصر
                       CustomText(
                         topPadding: Constant.groupTileSubTitleTopPadding,
-                        title: "العنوان : ${widget.address}",
+                        title: "سعر التذكرة : ${widget.ticketPrice}",
                         fontSize: ksize.width * 0.04,
                         fontfamily: Strings.emptyString,
                         fontWight: FontWeight.w300,
@@ -96,7 +96,7 @@ class _ConnectTileState extends State<ConnectTile> {
                       // CustomText لعرض المعلم المميز
                       CustomText(
                         topPadding: Constant.groupTileSubTitleTopPadding,
-                        title: "المعلم : ${widget.landmark}",
+                        title: "رقم التذكرة : ${widget.ticketId}",
                         fontSize: ksize.width * 0.05,
                         fontfamily: Strings.emptyString,
                         fontWight: FontWeight.w300,
@@ -129,7 +129,7 @@ class _ConnectTileState extends State<ConnectTile> {
                             child: CustomText(
                               topPadding: 3,
                               wordSpacing: 0.2,
-                              title: widget.description,
+                              title: "ميعاد الفعالية ${widget.time}",
                               fontSize: ksize.width * 0.05,
                               fontfamily: Strings.emptyString,
                               color: const Color.fromARGB(255, 0, 0, 0),

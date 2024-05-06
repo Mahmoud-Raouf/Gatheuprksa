@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gatheuprksa/pages/Connects/connects.dart';
 import 'package:gatheuprksa/pages/Dashboard/event_Fav_detail.dart';
 import 'package:gatheuprksa/pages/Dashboard/home_controller.dart';
+import 'package:gatheuprksa/pages/Dashboard/statistics.dart';
 import 'package:gatheuprksa/pages/Profile/companyProfile.dart';
 import 'package:gatheuprksa/pages/Profile/profile.dart';
 import 'package:gatheuprksa/theme/app_theme.dart';
@@ -37,6 +39,7 @@ class _HomeState extends State<Home> {
   double height = Constant.zero;
   double width = Constant.zero;
   Stream<QuerySnapshot> stream = FirebaseFirestore.instance.collection('cities').snapshots();
+
   String? commentContent;
   String userId = "";
   String userName = "";
@@ -53,6 +56,20 @@ class _HomeState extends State<Home> {
   String _subImage2 = "";
   String _subImage3 = "";
   String _subImage4 = "";
+
+  String generateRandomNumber() {
+    Random random = Random(); // إنشاء كائن لتوليد أرقام عشوائية
+    String randomNumber = ''; // تهيئة سلسلة فارغة لتخزين الرقم العشوائي
+
+    for (int i = 0; i < 10; i++) {
+      // حلقة تكرار لإنشاء رقم عشوائي من 10 خانات
+      randomNumber += random.nextInt(10).toString(); // إضافة رقم عشوائي جديد إلى السلسلة
+    }
+    setState(() {
+      randomNumber; // تحديث قيمة الرقم العشوائي في واجهة المستخدم
+    });
+    return randomNumber; // إرجاع الرقم العشوائي المولّد
+  }
 
   String? imageUrl; // حقل مؤقت لعنوان الصورة
   Future<String> downloadImage(String imagePath) async {
@@ -177,6 +194,10 @@ class _HomeState extends State<Home> {
                 return detailsPage(); // عرض واجهة تفاصيل مكان
               case Constant.INT_FAV:
                 return allFavEvents(documentId); // عرض واجهة تفاصيل مكان
+              case Constant.INT_Statistics:
+                return statisticsPlanedTile(); // عرض واجهة تفاصيل مكان
+              case Constant.INT_tickets:
+                return userTickets(); // عرض واجهة تفاصيل مكان
 
               default:
                 return _home();
@@ -365,6 +386,267 @@ class _HomeState extends State<Home> {
     );
   }
 
+  statisticsPlanedTile() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 15),
+      child: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('cities').snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          }
+
+          if (snapshot.hasData) {
+            return Column(
+              children: [
+                const SizedBox(
+                  height: 50,
+                ),
+                CustomText(
+                  title: "إحصائيات كل المدن ", // نص العنصر
+                  color: const Color.fromARGB(255, 92, 92, 92), // لون النص
+                  fontfamily: Strings.emptyString, // خط النص
+                  fontWight: FontWeight.w800, // وزن الخط
+                  fontSize: 20, // حجم الخط يعتمد على طول النص
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height / 1.4,
+                  width: width,
+                  child: ListView.builder(
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      DocumentSnapshot document = snapshot.data!.docs[index];
+                      Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+                      String name = data['name'];
+                      String picture = data['picture'];
+                      String documentuid = document.id;
+
+                      return InkWell(
+                          onTap: () {
+                            Get.to(Statistics(
+                              citiesName: name,
+                              citiesDocumentId: documentuid,
+                            ));
+                          },
+                          child: Card(
+                            elevation: 4, // ارتفاع الظل للبطاقة
+                            shadowColor: Colors.grey, // لون الظل
+                            child: SizedBox(
+                              height: 80,
+                              width: double.infinity, // عرض البطاقة يمتد لتغطية الشاشة
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0), // هامش للعنصر الرئيسي
+                                child: ListTile(
+                                  contentPadding: EdgeInsets.zero, // لجعل هامش المحتوى صفر
+                                  title: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start, // محاذاة العناصر إلى اليمين
+                                    crossAxisAlignment: CrossAxisAlignment.start, // محاذاة العناصر إلى الأعلى
+                                    children: [
+                                      Center(
+                                        child: CustomText(
+                                          title: "إحصائيات مدينة $name", // نص العنصر
+                                          color: const Color.fromARGB(255, 92, 92, 92), // لون النص
+                                          fontfamily: Strings.emptyString, // خط النص
+                                          fontWight: FontWeight.w800, // وزن الخط
+                                          fontSize: name.length > 12 ? 16 : 15, // حجم الخط يعتمد على طول النص
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ));
+                    },
+                  ),
+                ),
+              ],
+            );
+          }
+          return const SizedBox();
+        },
+      ),
+    );
+  }
+
+  userTickets() {
+    return Scaffold(
+      appBar: NoAppBar(),
+      body: Padding(
+        padding: const EdgeInsets.only(
+          left: Constant.bookingTileLeftPadding,
+          right: Constant.bookingTileRightPadding,
+        ),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Padding(
+            padding: Constant.constantPadding(Constant.SIZE100 / 2),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 300),
+              child: Column(
+                children: [
+                  CustomText(
+                    title: "التذاكر الخاصة بك ", // نص العنصر
+                    color: const Color.fromARGB(255, 92, 92, 92), // لون النص
+                    fontfamily: Strings.emptyString, // خط النص
+                    fontWight: FontWeight.w800, // وزن الخط
+                    fontSize: 20, // حجم الخط يعتمد على طول النص
+                  ),
+                  SizedBox(
+                    height: height * Constant.searchBodyHeight,
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('tickets')
+                          .where('userUid', isEqualTo: userId)
+                          .snapshots(),
+                      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        }
+
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        }
+
+                        if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+                          // عرض قائمة الأماكن السياحية
+                          return ListView.builder(
+                            padding: EdgeInsets.only(
+                              left: Constant.searchTileListLeftPadding,
+                              bottom: height * Constant.searchTileListBottomPadding,
+                              right: Constant.searchTileListRightPadding,
+                              top: Constant.searchTileListTopPadding,
+                            ),
+                            itemCount: snapshot.data!.docs.length,
+                            itemBuilder: (context, index) {
+                              DocumentSnapshot document = snapshot.data!.docs[index];
+                              Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+                              String title = data['title'] ?? '';
+                              String ticketId = data['ticketId'] ?? '';
+                              String ticketPrice = data['ticketPrice'] ?? '';
+
+                              DateTime now = data['time']?.toDate() ?? DateTime.now();
+
+                              DateFormat formatter = DateFormat.yMd().add_jm();
+                              String timeDate = formatter.format(now);
+                              return Stack(
+                                children: [
+                                  // تأثير زجاجي خلفي للعنصر
+                                  BackdropFilter(
+                                    filter: ImageFilter.blur(sigmaX: Constant.blurSigmaX, sigmaY: Constant.blurSigmaY),
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      // إخفاء لوحة المفاتيح عند النقر على العنصر
+                                      FocusScope.of(context).unfocus();
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.all(Constant.searchTileMargin),
+                                      padding: const EdgeInsets.only(bottom: Constant.searchTileContentBottomPadding),
+                                      decoration: Constant.boxDecoration,
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          // معلومات الأماكن السياحية
+                                          Padding(
+                                            padding: const EdgeInsets.only(right: 8.0),
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                const SizedBox(
+                                                  height: 20,
+                                                ),
+                                                // عنوان الأماكن السياحية
+
+                                                CustomText(
+                                                  title: title,
+                                                  fontSize: Constant.searchTileTitleSize,
+                                                  color: AppTheme.colorblack,
+                                                  fontWight: FontWeight.w900,
+                                                ),
+
+                                                Padding(
+                                                  padding: const EdgeInsets.only(top: Constant.tripCardLocationPadding),
+                                                  child: SizedBox(
+                                                    width: width * 0.45,
+                                                    child: CustomText(
+                                                      title: 'تذكرة لفعالية : $title',
+                                                      fontSize: 10.sp,
+                                                      color: Colors.black87,
+                                                      fontWight: FontWeight.w400,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.only(top: Constant.tripCardLocationPadding),
+                                                  child: SizedBox(
+                                                    width: width * 0.45,
+                                                    child: CustomText(
+                                                      title: 'سعر التذكرة : $ticketPrice',
+                                                      fontSize: 10.sp,
+                                                      color: Colors.black87,
+                                                      fontWight: FontWeight.w400,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.only(top: Constant.tripCardLocationPadding),
+                                                  child: SizedBox(
+                                                    width: width * 0.45,
+                                                    child: CustomText(
+                                                      title: 'رقم التذكرة : $ticketId',
+                                                      fontSize: 10.sp,
+                                                      color: Colors.black87,
+                                                      fontWight: FontWeight.w400,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.only(top: Constant.tripCardLocationPadding),
+                                                  child: SizedBox(
+                                                    width: width * 0.7,
+                                                    child: CustomText(
+                                                      title: 'وقت حجز التذكرة : $timeDate',
+                                                      fontSize: 10.sp,
+                                                      color: Colors.black87,
+                                                      fontWight: FontWeight.w400,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          // زر "المزيد"
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        } else {
+                          return const SizedBox(); // التعامل مع حالة عدم وجود بيانات
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 200,
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   allEvents(String cityName) {
     return Scaffold(
       backgroundColor: AppTheme.colorTransprant,
@@ -455,7 +737,7 @@ class _HomeState extends State<Home> {
                                               top: Constant.bookingTileTopRightPadding,
                                             ),
                                             child: Container(
-                                              height: height * Constant.searchTileImageHeight * 1.2,
+                                              height: height * 0.14,
                                               width: width / Constant.searchTileImageWidth,
                                               decoration: BoxDecoration(
                                                 borderRadius:
@@ -524,6 +806,17 @@ class _HomeState extends State<Home> {
                                                       setState(() {
                                                         documentDetailId = documentDetailuid;
                                                       });
+                                                      try {
+                                                        // استدعاء Firestore لتحديث الحقل "like"
+                                                        await FirebaseFirestore.instance
+                                                            .collection('cities')
+                                                            .doc(documentId)
+                                                            .collection('events')
+                                                            .doc(documentDetailId)
+                                                            .update({'NumberOfVisits': FieldValue.increment(1)});
+                                                      } catch (e) {
+                                                        print('حدث خطأ: $e');
+                                                      }
                                                     },
                                                     child: CustomText(
                                                       topPadding: Constant.moreTextTopPadding,
@@ -624,9 +917,9 @@ class _HomeState extends State<Home> {
                             itemBuilder: (context, index) {
                               DocumentSnapshot document = snapshot.data!.docs[index];
                               Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-                              String title = data['title'];
+                              String title = data['title'] ?? '';
                               String picture = data['imageUrl'];
-                              String notes = data['notes'];
+                              String notes = data['notes'] ?? '';
                               String favCitiesDocumentId = data['favCitiesDocumentId'];
                               String favDocumentId = data['favDocumentId'];
 
@@ -658,7 +951,7 @@ class _HomeState extends State<Home> {
                                               top: Constant.bookingTileTopRightPadding,
                                             ),
                                             child: Container(
-                                              height: height * Constant.searchTileImageHeight * 1.2,
+                                              height: height * 0.13,
                                               width: width / Constant.searchTileImageWidth,
                                               decoration: BoxDecoration(
                                                 borderRadius:
@@ -776,8 +1069,10 @@ class _HomeState extends State<Home> {
           String notes = place?['notes'] ?? ''; // العنوان
           String address = place?['address'] ?? ''; // العنوان
           String description = place?['description'] ?? ''; // الوصف الثاني
+          String imageUrl = place?['imageUrl'] ?? ''; // الوصف الثاني
 
           String ticketPrice = place?['ticketPrice'] ?? ''; //
+          String CompanyUid = place?['uid'] ?? ''; //
 
           DateTime? startingDateTime = place?['startingDate']?.toDate();
           if (startingDateTime != null) {
@@ -796,9 +1091,9 @@ class _HomeState extends State<Home> {
           DateFormat formatter2 = DateFormat.yMd().add_jm();
           String endingDate = formatter2.format(now2);
 
-          String totalTicketsAvailable = place?['totalTicketsAvailable'] ?? ''; // الوصف الثاني
+          int totalTicketsAvailable = place?['totalTicketsAvailable'] ?? ''; // الوصف الثاني
           List<Map<String, String>> images = [
-            {'picture': place?['imageUrl'] ?? ''},
+            {'picture': place?['imageUrl']},
             // {'image': place?['subImage2'] ?? ''},
             // {'image': place?['subImage3'] ?? ''},
             // {'image': place?['subImage4'] ?? ''},
@@ -823,9 +1118,38 @@ class _HomeState extends State<Home> {
                     ),
                     const Spacer(),
                     InkWell(
-                      onTap: () {
-                        String imageUrl = place?['imageUrl'] ?? '';
-
+                      onTap: () async {
+                        // استدعاء Firestore لتحديث الحقل "like"
+                        try {
+                          // استدعاء Firestore لتحديث الحقل "like"
+                          await FirebaseFirestore.instance
+                              .collection('cities')
+                              .doc(documentId)
+                              .collection('events')
+                              .doc(documentDetailId)
+                              .update({'like': FieldValue.increment(1)});
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              duration: Duration(seconds: 3),
+                              showCloseIcon: true,
+                              content: Text("تم تسجيل الاعجاب بنجاح"),
+                            ),
+                          );
+                        } catch (e) {
+                          print('حدث خطأ: $e');
+                        }
+                      },
+                      child: SizedBox(
+                        width: 25.sp,
+                        height: 25.sp,
+                        child: Image.asset(
+                          'assets/like.png',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10.0),
+                    InkWell(
+                      onTap: () async {
                         FirebaseFirestore.instance
                             .collection('usersFav')
                             .doc(userId)
@@ -847,6 +1171,25 @@ class _HomeState extends State<Home> {
                           'endingDate': endingDate,
                           'timestamp': FieldValue.serverTimestamp(),
                         });
+
+                        try {
+                          // استدعاء Firestore لتحديث الحقل "like"
+                          await FirebaseFirestore.instance
+                              .collection('cities')
+                              .doc(documentId)
+                              .collection('events')
+                              .doc(documentDetailId)
+                              .update({'userFav': FieldValue.increment(1)});
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              duration: Duration(seconds: 3),
+                              showCloseIcon: true,
+                              content: Text("تم الاضافة فى المفضلة بنجاح"),
+                            ),
+                          );
+                        } catch (e) {
+                          print('حدث خطأ: $e');
+                        }
                       },
                       child: Icon(
                         Icons.favorite_border,
@@ -855,7 +1198,25 @@ class _HomeState extends State<Home> {
                     ),
                     const SizedBox(width: 10.0),
                     InkWell(
-                      onTap: () {
+                      onTap: () async {
+                        try {
+                          // استدعاء Firestore لتحديث الحقل "like"
+                          await FirebaseFirestore.instance
+                              .collection('cities')
+                              .doc(documentId)
+                              .collection('events')
+                              .doc(documentDetailId)
+                              .update({'sharedCount': FieldValue.increment(1)});
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              duration: Duration(seconds: 3),
+                              showCloseIcon: true,
+                              content: Text("تم تسجيل الاعجاب بنجاح"),
+                            ),
+                          );
+                        } catch (e) {
+                          print('حدث خطأ: $e');
+                        }
                         Share.share(
                             "فعالية جديدة بعنوان $title  فى $address بسعر $ticketPrice ريال تبدأ فى $startingDate وتنتهى فى $endingDate"); // قائمة الشير التى تظهر اسفل ال الهاتف لتطبيقات السوشيال ميديا
                       },
@@ -882,7 +1243,7 @@ class _HomeState extends State<Home> {
                   primary: false,
                   itemCount: images.length,
                   itemBuilder: (BuildContext context, int index) {
-                    String imageUrl = images[index]['imageUrl'] ?? '';
+                    String imageUrl = images[index]['picture'] ?? '';
 
                     return Padding(
                       padding: const EdgeInsets.only(right: 10.0),
@@ -900,12 +1261,15 @@ class _HomeState extends State<Home> {
                             } else {
                               // إذا كانت الصورة لا تزال قيد التحميل، نعرض دائرة التحميل
                               return Center(
-                                child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes != null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          (loadingProgress.expectedTotalBytes ?? 1)
-                                      : loadingProgress.cumulativeBytesLoaded /
-                                          (loadingProgress.expectedTotalBytes ?? 1),
+                                child: Padding(
+                                  padding: EdgeInsets.only(right: width * 0.40),
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes != null
+                                        ? loadingProgress.cumulativeBytesLoaded /
+                                            (loadingProgress.expectedTotalBytes ?? 1)
+                                        : loadingProgress.cumulativeBytesLoaded /
+                                            (loadingProgress.expectedTotalBytes ?? 1),
+                                  ),
                                 ),
                               );
                             }
@@ -1049,6 +1413,56 @@ class _HomeState extends State<Home> {
                         textAlign: TextAlign.right,
                       ),
                     ),
+                    const SizedBox(height: 10.0),
+                    totalTicketsAvailable != 0
+                        ? CustomButton(
+                            backgroundColor: AppTheme.themeColor,
+                            borderColor: AppTheme.themeColor,
+                            buttonTitle: "حجز تذكرة",
+                            height: Constant.customButtonHeight,
+                            textColor: AppTheme.colorWhite,
+                            onTap: () async {
+                              Future payTickets() async {
+                                String ticketId = generateRandomNumber(); // توليد رقم عشوائي لتذكرة
+
+                                CollectionReference mainTickets = FirebaseFirestore.instance.collection('tickets');
+
+                                DateTime now = DateTime.now();
+                                Timestamp currentTimestamp = Timestamp.fromDate(now);
+
+                                mainTickets.add({
+                                  'userUid': userId,
+                                  'title': title,
+                                  'ticketId': ticketId,
+                                  'time': currentTimestamp,
+                                  'ticketPrice': ticketPrice,
+                                  'CompanyUID': CompanyUid,
+                                });
+                              }
+
+                              payTickets();
+                              try {
+                                // استدعاء Firestore لتحديث الحقل "like"
+                                await FirebaseFirestore.instance
+                                    .collection('cities')
+                                    .doc(documentId)
+                                    .collection('events')
+                                    .doc(documentDetailId)
+                                    .update({'totalTicketsAvailable': FieldValue.increment(-1)});
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    duration: Duration(seconds: 3),
+                                    showCloseIcon: true,
+                                    content: Text("تم شراء التذكرة بنجاح"),
+                                  ),
+                                );
+                              } catch (e) {
+                                print('حدث خطأ: $e');
+                              }
+                              setState(() {});
+                            },
+                          )
+                        : const SizedBox(),
                     const SizedBox(height: 10.0),
                     Column(
                       children: [
@@ -1243,7 +1657,16 @@ class _HomeState extends State<Home> {
               navBarItem(title: Strings.profile, index: Constant.INT_TWO, icon: tapPerson, tappedIcon: tapPerson),
               if (userRole == 'company')
                 navBarItem(title: Strings.experiments, index: Constant.INT_THREE, icon: chat, tappedIcon: tapChat),
-              navBarItem(title: Strings.favorite, index: Constant.INT_FAV, icon: favorite, tappedIcon: favorite),
+              if (userRole == 'company')
+                navBarItem(
+                    title: Strings.statistics,
+                    index: Constant.INT_Statistics,
+                    icon: tapStatistic,
+                    tappedIcon: tapStatistic),
+              if (userRole == 'user')
+                navBarItem(
+                    title: Strings.favorite, index: Constant.INT_tickets, icon: taptickets, tappedIcon: taptickets),
+              navBarItem(title: Strings.tickets, index: Constant.INT_FAV, icon: favorite, tappedIcon: favorite),
             ],
           ),
         ),

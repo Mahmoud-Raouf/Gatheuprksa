@@ -77,6 +77,7 @@ class Strings {
   static const String home = 'الصفحة الرئيسية';
   static const String profile = 'الملف الشخصي';
   static const String favorite = 'المفضلة';
+  static const String tickets = 'التذاكر';
   static const String connect = 'تواصل';
   static const String whatDo = 'ماذا';
   static const String youWantToSee = 'تريد أن ترى؟';
@@ -119,6 +120,7 @@ class Strings {
 
   static const String add = 'إضافة';
   static const String experiments = 'الفعاليات';
+  static const String statistics = 'الاحصائيات';
   static const String visitorEvents = 'كل الفعاليات';
   static const String visitors = 'جميع الزوار';
   static const String hiDhaval = 'مرحبًا! Dhaval';

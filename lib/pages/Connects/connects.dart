@@ -12,7 +12,6 @@ import 'package:gatheuprksa/util/resources.dart';
 import 'package:gatheuprksa/widgets/Custom_Textfield.dart';
 import 'package:gatheuprksa/widgets/Custombutton.dart';
 import 'package:gatheuprksa/widgets/_appbar.dart';
-import 'package:gatheuprksa/widgets/connectTile.dart';
 import 'package:gatheuprksa/widgets/custom_text.dart';
 import 'package:gatheuprksa/widgets/no_appbar.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -162,9 +161,6 @@ class _ConnectState extends State<Connect> {
               case Constant.INT_TWO:
                 return _addEvent();
 
-              case Constant.INT_FOUR:
-                return _superLeadsBody();
-
               default:
                 return __body();
             }
@@ -181,14 +177,6 @@ class _ConnectState extends State<Connect> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // عناصر لتحديد الخيارات المتاحة للمستخدم
-          optionBox(
-              icon: superLeads,
-              title: Strings.visitorEvents,
-              onTap: () {
-                connectController.index = Constant.INT_FOUR;
-                connectController.update();
-              }),
           optionBox(
               icon: group,
               title: Strings.addEvent,
@@ -426,82 +414,6 @@ class _ConnectState extends State<Connect> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  // دالة لعرض الجزء المتعلق بعرض التجارب
-  _superLeadsBody() {
-    return Scaffold(
-      backgroundColor: AppTheme.connectBodyColor,
-      appBar: NoAppBar(),
-      body: Padding(
-        padding: const EdgeInsets.only(
-          left: Constant.bookingTileLeftPadding,
-          right: Constant.bookingTileRightPadding,
-        ),
-        child: Padding(
-          padding: Constant.constantPadding(Constant.SIZE100 / 2),
-          child: Column(
-            children: [
-              // شريط عنوان لعرض عنوان الصفحة
-              CustomAppBar(
-                  title: Strings.visitorEvents,
-                  space: Constant.SIZE15,
-                  leftPadding: 15,
-                  bottomPadding: 10,
-                  onTap: () {
-                    connectController.index = Constant.INT_ONE;
-                    connectController.update();
-                  }),
-              const SizedBox(
-                height: Constant.SIZE15,
-              ),
-              Expanded(
-                // عرض التجارب باستخدام StreamBuilder
-                child: StreamBuilder<QuerySnapshot>(
-                    stream: stream,
-                    builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      }
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const SizedBox(width: 40, height: 40, child: CircularProgressIndicator());
-                      }
-                      if (snapshot.hasData) {
-                        // استخدام ListView.builder لعرض التجارب بشكل ديناميكي
-                        return ListView.builder(
-                          padding: const EdgeInsets.only(
-                            left: Constant.searchTileListLeftPadding,
-                            right: Constant.searchTileListRightPadding,
-                            top: Constant.searchTileListTopPadding,
-                          ),
-                          itemCount: snapshot.data!.docs.length,
-                          itemBuilder: (context, index) {
-                            DocumentSnapshot document = snapshot.data!.docs[index];
-                            Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-                            String title = data['title'];
-                            String landmark = data['landmark'];
-                            String address = data['address'];
-                            String description = data['description'];
-
-                            // عرض بيانات الفعالية باستخدام ConnectTile
-                            return ConnectTile(
-                              isGroupTile: false,
-                              title: title,
-                              address: address,
-                              description: description,
-                              landmark: landmark,
-                            );
-                          },
-                        );
-                      }
-                      return const SizedBox();
-                    }),
-              )
-            ],
-          ),
         ),
       ),
     );

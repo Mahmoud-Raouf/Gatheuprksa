@@ -55,9 +55,7 @@ class _EventFavDetailState extends State<EventFavDetail> {
             .snapshots(),
         builder: (context, snapshot) {
           var place = snapshot.data?.data() as Map<String, dynamic>?; // البيانات من Firestore
-          String id = snapshot.data?.id ?? ''; // الـ ID الخاص بالمستند
           String title = place?['title'] ?? ''; // العنوان
-          String notes = place?['notes'] ?? ''; // العنوان
           String address = place?['address'] ?? ''; // العنوان
           String description = place?['description'] ?? ''; // الوصف الثاني
 
@@ -80,9 +78,9 @@ class _EventFavDetailState extends State<EventFavDetail> {
           DateFormat formatter2 = DateFormat.yMd().add_jm();
           String endingDate = formatter2.format(now2);
 
-          String totalTicketsAvailable = place?['totalTicketsAvailable'] ?? ''; // الوصف الثاني
+          int totalTicketsAvailable = place?['totalTicketsAvailable'] ?? ''; // الوصف الثاني
           List<Map<String, String>> images = [
-            {'picture': place?['imageUrl'] ?? ''},
+            {'picture': place?['imageUrl'] ?? 'https://www.gothamindustries.com/images/image-not-available.png'},
             // {'image': place?['subImage2'] ?? ''},
             // {'image': place?['subImage3'] ?? ''},
             // {'image': place?['subImage4'] ?? ''},
